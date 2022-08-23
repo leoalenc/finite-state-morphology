@@ -1,0 +1,12 @@
+comprarão	comprar+V+FUT+3+PL
+comprarás	comprar+V+FUT+2+SG
+comprará	comprar+V+FUT+3+SG
+compraremos	comprar+V+FUT+1+PL
+comprareis	comprar+V+FUT+2+PL
+comprarei	comprar+V+FUT+1+SG
+venderão	vender+V+FUT+3+PL
+venderás	vender+V+FUT+2+SG
+venderá	vender+V+FUT+3+SG
+venderemos	vender+V+FUT+1+PL
+vendereis	vender+V+FUT+2+PL
+venderei	vender+V+FUT+1+SG
