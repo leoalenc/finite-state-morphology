@@ -1,0 +1,81 @@
+# script.foma
+# Leonel Figueiredo de Alencar leonel.de.alencar@ufc.br
+# August 24, 2022
+
+clear
+set flag-is-epsilon ON
+read lexc verbs.lexc
+define Lexicon
+
+# thematic vowels
+define VT [ a | e | i ] ;
+
+# 1st plural suffix
+define PL1 {mos} ;
+
+# 2nd plural suffix
+define PL2 {is} ;
+
+# ends with some morpheme followed by the 1st or 2nd plural suffix
+define PL12 $ "^" ?+ "^" [ PL1 | PL2 ] .#. ;
+
+# indicative imperfect
+define IMPF "^" {va} "^" ;
+
+# pluperfect
+define PQP "^" {ra} "^" ;
+
+# E Replacement: "e" of future indicative suffix "-re" changes to "á" before "s" or at word end (compr^a^^re^ => compr^a^^rá^)
+define EReplacement e -> á || "^" r _ "^" [s | .#.] ;
+
+# Nasalisation: "e" of future indicative suffixe changes to "ã" before word-final "m" (compr^a^^re^m => compr^a^^rã^m)
+define Nasalisation e -> ã || "^" r _  "^" m .#.;
+
+# M Replacement: "m" of 3rd person plural suffix changes to "o" before future indicative suffixe "rã" (compr^a^^rã^m => compr^a^^rã^o)
+define MReplacement m -> o || ã "^" _ ;
+
+# E Raising: thematic vowel "e" changes to "i" before imperfect indicative suffix "va" (vend^e^va^m => vend^i^va^m)
+define ERaising e -> i || _ "^" {va} "^" ;
+
+# V Deletion: "v" of imperfect indicative suffix "va" is deleted when the verb belongs to the 2nd or 3rd conjugation (vend^i^va^m => vend^i^a^m)
+define VDeletion v -> 0 || i "^" _ [ a | e ] "^" ;
+
+# Thematic Vowel I Accentuation: "i" receives acute accent if word ends with 1fst or 2nd plural suffixes (vend^i^a^mos => vend^í^a^mos)
+define TVIAccentuation i -> í || _ PL12 ;
+
+# Conditional (Suffix) Accentuation: "i" of COND suffix "ria" receives acute accent if followed by 1fst or 2nd plural suffix
+define CondAccentuation i -> í || r _ ?+ %^ [ PL1 | PL2 ] ;
+
+# A Accentuation: thematic vowel "a" receives acute accent before "va" and 1fst or 2nd plural suffixes (compr^a^va^mos => compr^á^va^mos)
+define AAccentuation a -> á || _ IMPF [ PL1 | PL2 ] .#. ;
+
+# A Raising: "a" changes to "e" before 2nd plural suffix (compr^a^ria^is => compr^a^rie^is, vend^e^va^is => vend^e^ve^is)
+define ARaising a -> e || "^" ?+ "^" ?+ _ "^" PL2 .#. ;
+
+# present subjunctive suffixes
+define SBJR "^" [ e | a ] "^" ;
+
+# first singular suffix "o"
+define O1SG "^" "^" o .#. ;
+
+# Thematic Vowel Deletion: thematic vowel is deleted before 1st singular suffix "o" (compr^a^^o => compr^^^o, compr^a^e^ => compr^^e^)
+define TVDeletion VT -> 0 || _ [ O1SG | SBJR ] ;
+
+# "^" Cleanup: deletion of morphem boundary symbol
+define Cleanup "^" -> 0;
+
+define Grammar  Lexicon  .o.
+                TVDeletion .o.
+                EReplacement .o.
+                Nasalisation .o.
+                MReplacement .o.
+                AAccentuation .o.
+                ERaising .o.
+                ARaising .o.
+                VDeletion .o.
+                TVIAccentuation .o.
+                CondAccentuation .o.
+                Cleanup ;
+
+regex Grammar ;
+ss verbs.fst

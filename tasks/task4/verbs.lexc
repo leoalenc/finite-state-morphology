@@ -1,0 +1,52 @@
+!!! verbs.lexc
+!!! Leonel Figueiredo de Alencar leonel.de.alencar@ufc.br
+!!! August 24, 2022
+
+Multichar_Symbols +V +FUT +COND +IMPF +PRS +SBJR +1 +2 +3 +SG +PL @U.VT.A@ @U.VT.E@ @U.VT.I@ @D.VT.A@
+
+LEXICON Root
+compr ThematicVowel1;
+vend  ThematicVowel2;
+! part  ThematicVowel3;
+
+LEXICON ThematicVowel1
+< 0:%^ a "@U.VT.A@" > Lemma;
+
+LEXICON ThematicVowel2
+< 0:%^ e "@U.VT.E@" > Lemma;
+
+LEXICON ThematicVowel3
+< 0:%^ i "@U.VT.I@" > Lemma;
+
+LEXICON Lemma
+r:^ PartOfSpeech;
+
+LEXICON PartOfSpeech
++V:0  MoodTense;
+
+LEXICON MoodTense
++FUT:re Marked1SGNonPRS;
++IMPF:va Unmarked1SG;
++COND:ria Unmarked1SG;
++PRS:0 Marked1SGPRS;
+< %+SBJR:e "@U.VT.A@" > Unmarked1SG;
+< %+SBJR:a "@D.VT.A@" > Unmarked1SG;
+
+LEXICON Unmarked1SG
++1+SG:^ #;
+  Common;
+
+LEXICON Marked1SGNonPRS
++1+SG:^i #;
+  Common;
+
+LEXICON Marked1SGPRS
++1+SG:^o #;
+    Common;
+
+LEXICON Common
++2+SG:^s #;
++3+SG:^ #;
++1+PL:^mos #;
++2+PL:^is #;
++3+PL:^m #;

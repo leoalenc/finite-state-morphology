@@ -1,0 +1,27 @@
+# rules-01.script
+# Leonel Figueiredo de Alencar leonel.de.alencar@ufc.br
+# August 22, 2022
+
+clear
+read lexc verbs-01.lexc
+define Lexicon
+
+# E Replacement: "e" of future indicative suffix "-re" changes to "á" before "s" or at word end (compra^^re^ => compra^^rá^)
+define EReplacement e -> á || "^" r _ "^" [s | .#.] ;
+
+# Nasalisation: "e" of future indicative suffixe changes to "ã" before word-final "m" (compra^^re^m => compra^^rã^m)
+define Nasalisation e -> ã || "^" r _  "^" m .#.;
+
+# M Replacement: "m" of 3rd person plural suffix changes to "o" before future indicative suffixe "rã" (compra^^rã^m => compra^^rã^o)
+define MReplacement m -> o || ã "^" _ ;
+
+# "^" Cleanup: deletion of morphem boundary symbol
+define Cleanup "^" -> 0;
+
+define Grammar  Lexicon  .o.
+                EReplacement .o.
+                Nasalisation .o.
+                MReplacement .o.
+                Cleanup ;
+
+regex Grammar ;

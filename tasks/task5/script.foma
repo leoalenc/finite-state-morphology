@@ -1,0 +1,185 @@
+# script.foma
+# Leonel Figueiredo de Alencar leonel.de.alencar@ufc.br
+# August 26, 2022
+
+clear
+set flag-is-epsilon ON
+read lexc verbs.lexc
+define Lexicon
+
+#############################
+# Rules for handling orthographic alternations ("pago", "pague", "ajo", "agimos" etc.)
+
+define FrontVowel [ e | i ] ;
+
+define BackVowel [ a | o | u ] ;
+
+# "proteger", "agir", etc.
+define PhonJ g -> J || _ FrontVowel r %* ;
+
+# "tecer"
+define PhonS c -> S || _ FrontVowel r %* ;
+
+# "pagar"
+define PhonG g -> G || _ BackVowel r %* ;
+
+# "secar"
+define PhonK c -> K || _ BackVowel r %* ;
+
+define Phon PhonJ .o. PhonG .o. PhonS .o. PhonK ;
+
+# "aja"
+define OrthoJ J -> j || _ BackVowel ;
+
+# "teço"
+define OrthoS S -> ç || _ BackVowel ;
+
+# "pague"
+define OrthoG G -> {gu} || _ FrontVowel ;
+
+# "seque"
+define OrthoK K -> {qu} || _ FrontVowel ;
+
+# "coce"
+define OrthoC ç -> c || _ FrontVowel ;
+
+define Ortho  OrthoJ .o.
+              OrthoG .o.
+              OrthoS .o.
+              OrthoK .o.
+              OrthoC .o.
+              J -> g .o.
+              G -> g .o.
+              S -> c .o.
+              K -> c;
+
+#############################
+
+# thematic vowels
+define TV [ a | e | i ] ;
+
+define MB %^ ;
+
+define STRESS %' ;
+
+# MB Insertion
+define MBInsertion [.0.] -> MB || _ TV r "*" ;
+
+# R Deletion: deletion of infinitive suffix "r" of lemma forms
+define RDeletion r -> 0 || _ "*" ;
+
+# Asterisk Deletion
+define AsteriskDeletion "*" -> 0 ;
+
+# 1st plural suffix
+define PL1 {mos} ; ! TODO: MB {mos} .#.
+
+# 2nd plural suffix
+define PL2 {is} ; ! TODO: MB {is} .#.
+
+# indicative imperfect
+define IMPF MB {va} MB ; ! TODO: MB {va}
+
+# pluperfect
+define PQP MB {ra} MB ; ! TODO: see above
+
+# imperfect subjunctive
+define SBJP MB {sse} MB ;  ! TODO: see above
+
+# E Replacement: "e" of future indicative suffix "-re" changes to "á" before "s" or at word end (compr^a^^re^ => compr^a^^rá^, compr^a^^re^s => compr^a^^rá^s)
+define EReplacement e -> á || MB STRESS r _ MB [s | 0] .#. ;
+
+# I Replacement: thematic vowel "i" changes to "e" in unstressed position (part^i^^s => part^e^^s)
+define IReplacement i -> e || MB _ MB MB [s | m | 0 ] .#. ;
+
+# I Elision: "i" is elided in "ii" (part^i^^is => part^i^^s) (Monteiro, 1987, p. 101)
+define IElision i -> 0 || MB i MB MB _  ;
+
+# Nasalisation: "e" of future indicative suffixe changes to "ã" before word-final "m" (compr^a^^'re^m => compr^a^^'rã^m)
+define Nasalisation e -> ã || MB STRESS r _  MB m .#.;
+
+# M Replacement: "m" of 3rd person plural suffix changes to "o" before future indicative suffixe "rã" (compr^a^^'rã^m => compr^a^^rã^o)
+define MReplacement m -> o || ã MB _ ;
+
+# E Raising: thematic vowel "e" changes to "i" before imperfect indicative suffix "va" (vend^e^va^m => vend^i^va^m)
+define ERaising e -> i || _ MB {va} MB ;
+
+! TODO: implement the alternation between "va" (1st conjugation) and "a" (2nd and 3rd) in the LEXC grammar?
+# V Deletion: "v" of imperfect indicative suffix "va" is deleted when the verb belongs to the 2nd or 3rd conjugation (vend^i^va^m => vend^i^a^m)
+define VDeletion v -> 0 || MB  i (STRESS)  MB _ [ a | e ] MB ;
+
+# some morpheme of length 1 followed by the 1st or 2nd plural suffix
+define PL12 MB ? MB [ PL1 | PL2 ] .#. ;
+
+# Thematic Vowel I Accentuation: "i" receives acute accent if followed by PL12 (vend^i^a^mos => vend^í^a^mos)
+define TVIAccentuation i -> í || _ PL12 ;
+
+# Conditional (Suffix) Accentuation: "i" of COND suffix "ria" receives acute accent if followed by 1fst or 2nd plural suffix
+define CondAccentuation i -> í || STRESS r _ ?+ %^ [ PL1 | PL2 ] ; ! TODO: reformulate rule using STRESS
+
+# A Accentuation: thematic vowel "a" receives acute accent before "va" and 1fst or 2nd plural suffixes (compr^a^va^mos => compr^á^va^mos)
+define AAccentuation a -> á || _ [IMPF | PQP | SBJP ] [ PL1 | PL2 ] .#. ;
+
+# Thematic Vowel Accentuation: thematic vowel receives acute accent before IMPF, PQP and SBJP suffixes followed by 1fst and 2nd plural suffixes (compr^a^va^mos => compr^á^va^mos)
+define TVAccentuation [.0.] -> %' || MB TV _  [IMPF | PQP | SBJP ] [ PL1 | PL2 ] .#. ;
+
+# Replace stress symbol with acute mark
+define Acute  a STRESS -> á .o.
+              i STRESS -> í .o.
+              e STRESS -> ê ;
+
+# A Raising: "a" changes to "e" before 2nd plural suffix (compr^a^ria^is => compr^a^rie^is, vend^í^a^is => vend^í^e^is)
+define ARaising a -> e || MB ?+ MB ?* _ MB PL2 .#. ;
+
+# present subjunctive suffixes
+define SBJR MB [ e | a ] MB ;
+
+# first singular suffix "o"
+define O1SG MB MB o .#. ;
+
+# Thematic Vowel Deletion: thematic vowel is deleted before 1st singular suffix "o" (compr^a^^o => compr^^^o, compr^a^e^ => compr^^e^)
+define TVDeletion TV -> 0 || _ [ O1SG | SBJR ] ;
+
+# Lemma form suffix
+define LemmaSuff r MB MB ;
+
+# D Insertion
+define DInsertion [.0.] -> d || LemmaSuff _ PL2 .#. ;
+
+# I Lowering
+define ILowering i -> e || LemmaSuff d _ s .#. ;
+
+# E Insertion
+define EInsertion [.0.] -> e || LemmaSuff _ [ s | m ] .#. ;
+
+# SBJF changes
+define SBJF DInsertion .o. ILowering .o. EInsertion ;
+
+# MB Cleanup: deletion of morphem boundary and stress symbols
+define Cleanup MB -> 0 .o. STRESS -> 0;
+
+define Grammar  Lexicon  .o.
+                SBJF .o.
+                Phon .o.
+                MBInsertion .o.
+                RDeletion .o.
+                AsteriskDeletion .o.
+                IReplacement .o.
+                TVDeletion .o.
+                EReplacement .o.
+                Nasalisation .o.
+                MReplacement .o.
+                !AAccentuation .o.
+                ERaising .o.
+                TVAccentuation .o.
+                VDeletion .o.
+                ARaising .o.
+                !TVIAccentuation .o.
+                CondAccentuation .o.
+                IElision .o.
+                Acute .o.
+                Cleanup .o.
+                Ortho ;
+
+regex Grammar ;
+save stack verbs.fst

@@ -1,0 +1,32 @@
+!!! verbs-01.lexc
+!!! Leonel Figueiredo de Alencar leonel.de.alencar@ufc.br
+!!! August 22, 2022
+
+Multichar_Symbols +V +FUT +1 +2 +3 +SG +PL
+
+LEXICON Root
+compr ThematicVowel1;
+vend  ThematicVowel2;
+
+LEXICON ThematicVowel1
+a Lemma;
+
+LEXICON ThematicVowel2
+e Lemma;
+
+LEXICON Lemma
+r:^ PartOfSpeech;
+
+LEXICON PartOfSpeech
++V:0  MoodTense;
+
+LEXICON MoodTense
++FUT:re PersonNumber;
+
+LEXICON PersonNumber
++1+SG:^i #;
++2+SG:^s #;
++3+SG:^ #;
++1+PL:^mos #;
++2+PL:^is #;
++3+PL:^m #;

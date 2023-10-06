@@ -1,0 +1,23 @@
+# 1st plural suffix
+define PL1 {mos} ;
+
+# 2nd plural suffix
+define PL2 {is} ;
+
+# ends with some morpheme followed by the 1st or 2nd plural suffix
+define PL12 $ "^" ?+ "^" [ PL1 | PL2 ] .#. ;
+
+# I Accentuation: "i" receives acute accent if word ends with 1fst or 2nd plural suffixes (vend^i^a^mos => vend^í^a^mos)
+define IAccentuation i -> í || _ PL12 ;
+
+compr^a^ria^is  *comprarieis
+compr^a^ria^mos *comprariamos
+
+vend^e^va^mos vendíamos
+vend^e^ria^is *venderieis
+vend^e^ria^mos  *venderiamos
+
+# V Deletion: "v" of imperfect indicative suffix "va" is deleted when the verb belongs to the 2nd or 3rd conjugation (vend^i^va^m => vend^i^a^m)
+define VDeletion v -> 0 || i "^" _ a "^" ;
+
+vend^e^va^is *vendíveis

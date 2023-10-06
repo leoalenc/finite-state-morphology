@@ -1,0 +1,57 @@
+!!! verbs.lexc
+!!! Leonel Figueiredo de Alencar leonel.de.alencar@ufc.br
+!!! August 26, 2022
+
+Multichar_Symbols +V +FUT +COND +IMPF +PQP +PRS +SBJR +SBJP +SBJF +1 +2 +3 +SG +PL @U.VT.A@ @U.VT.E@ @U.VT.I@ @D.VT.A@
+
+LEXICON Root
+< @txt"ar.txt" > ThematicVowel1;
+< @txt"er.txt" >  ThematicVowel2;
+< @txt"ir.txt" >  ThematicVowel3;
+
+LEXICON ThematicVowel1
+@U.VT.A@ PartOfSpeech;
+
+LEXICON ThematicVowel2
+@U.VT.E@ PartOfSpeech;
+
+LEXICON ThematicVowel3
+@U.VT.I@ PartOfSpeech;
+
+! the asterik "*" marks the preceeding "r" to be deleted
+LEXICON PartOfSpeech
++V:*^  MoodTense;
++V:^  Infinitive;
+! TODO: compr^a^r^, vend^e^r^, part^i^r^ as intermediate forms?
+
+LEXICON Infinitive
++SBJF:0 Unmarked1SG;
+
+LEXICON MoodTense
++FUT:'re Marked1SGNonPRS;
++IMPF:va Unmarked1SG;
++PQP:ra Unmarked1SG;
++SBJP:sse Unmarked1SG;
++COND:'ria Unmarked1SG;
++PRS:0 Marked1SGPRS;
+< %+SBJR:e "@U.VT.A@" > Unmarked1SG;
+< %+SBJR:a "@D.VT.A@" > Unmarked1SG;
+
+LEXICON Unmarked1SG
++1+SG:^ #;
+  Common;
+
+LEXICON Marked1SGNonPRS
++1+SG:^i #;
+  Common;
+
+LEXICON Marked1SGPRS
++1+SG:^o #;
+    Common;
+
+LEXICON Common
++2+SG:^s #;
++3+SG:^ #;
++1+PL:^mos #;
++2+PL:^is #;
++3+PL:^m #;
